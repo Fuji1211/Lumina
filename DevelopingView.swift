@@ -13,6 +13,10 @@ struct DevelopingView: View {
     @State private var isAgitating = false
     @State private var developProgress: Double = 0.0
     
+    // Frame feature
+    @State private var isFrameOn = false
+    @State private var frameColor: Color = Color(red: 0.1, green: 0.1, blue: 0.12)
+    
     private let motionManager = CMMotionManager()
     private let ciContext = CIContext()
     private let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
@@ -43,13 +47,7 @@ struct DevelopingView: View {
         VStack(spacing: 32) {
             Spacer()
             
-            if let img = image {
-                Image(uiImage: img)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: 260)
-                    .opacity(0.9)
-            }
+            photoPreview
             
             Text("現像する")
                 .font(.system(size: 28, weight: .light, design: .serif))
@@ -82,27 +80,30 @@ struct DevelopingView: View {
         VStack(spacing: 0) {
             Spacer()
             
-            // Emerging photo
-            ZStack {
-                if let img = modifiedImage ?? image {
-                    Image(uiImage: img)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxWidth: 280)
-                        .opacity(0.3 + developProgress * 0.7)
-                        .blur(radius: (1.0 - developProgress) * 8)
-                        .overlay(
-                            Rectangle()
-                                .fill(Color(red: 0.4, green: 0.05, blue: 0.05).opacity(0.4 * (1 - developProgress)))
-                        )
-                }
-            }
-            .frame(height: 340)
+            // Emerging photo with optional frame
+            photoPreview
+                .frame(height: 340)
             
             Spacer()
             
+            // Frame toggle button (white square)
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isFrameOn.toggle()
+                }
+            } label: {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(isFrameOn ? Color.white : Color.white.opacity(0.4))
+                    .frame(width: 28, height: 28)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 2)
+                            .stroke(Color.black.opacity(0.3), lineWidth: 1)
+                    )
+            }
+            .padding(.bottom, 20)
+            
             VStack(spacing: 12) {
-                Text(isAgitating ? "撹拌中" : "端末をゆっくり傾けて撹拌")
+                Text(isAgitating ? "掹拌中" : "端末をゆっくり傾けて掹拌")
                     .font(.system(size: 15, weight: .light))
                     .foregroundStyle(Color(red: 0.95, green: 0.4, blue: 0.35))
                 
@@ -110,7 +111,7 @@ struct DevelopingView: View {
                     .font(.system(size: 13, design: .monospaced))
                     .foregroundStyle(.white.opacity(0.4))
             }
-            .padding(.bottom, 60)
+            .padding(.bottom, 40)
             
             HStack(spacing: 40) {
                 Button("中止") {
@@ -134,6 +135,26 @@ struct DevelopingView: View {
                 .disabled(developProgress < 0.3)
             }
             .padding(.bottom, 50)
+        }
+    }
+    
+    // Photo preview with rounded corners and optional background frame
+    private var photoPreview: some View {
+        Group {
+            if let img = modifiedImage ?? image {
+                Image(uiImage: img)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 280)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .padding(isFrameOn ? 24 : 0)
+                    .background(
+                        isFrameOn ? frameColor : Color.clear
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: isFrameOn ? 8 : 0))
+                    .opacity(isDarkroom ? (0.3 + developProgress * 0.7) : 0.9)
+                    .blur(radius: isDarkroom ? (1.0 - developProgress) * 8 : 0)
+            }
         }
     }
     
