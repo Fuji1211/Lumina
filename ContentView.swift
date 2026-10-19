@@ -46,7 +46,6 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                // Film stock picker
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(FilmStock.allCases) { stock in
