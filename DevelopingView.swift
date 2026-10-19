@@ -16,10 +16,20 @@ struct DevelopingView: View {
     // Frame feature
     @State private var isFrameOn = false
     @State private var frameColor: Color = Color(red: 0.1, green: 0.1, blue: 0.12)
+    @State private var colorIndex: Int = 0
+    
+    private let frameColors: [Color] = [
+        Color(red: 0.1, green: 0.1, blue: 0.12),   // dark
+        Color(red: 0.95, green: 0.95, blue: 0.93), // light
+        Color(red: 0.85, green: 0.75, blue: 0.6),  // warm beige
+        Color(red: 0.2, green: 0.25, blue: 0.3),   // cool gray
+        Color(red: 0.6, green: 0.15, blue: 0.12)   // darkroom red
+    ]
     
     private let motionManager = CMMotionManager()
     private let ciContext = CIContext()
     private let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
+    private var lastShakeTime: Date = .distantPast
     
     var body: some View {
         ZStack {
@@ -170,6 +180,18 @@ struct DevelopingView: View {
             let intensity = min(1.0, (pitch + roll) * 0.4 + accel * 0.8)
             agitationIntensity = intensity
             isAgitating = intensity > 0.15
+            
+            // Shake detection for frame color change (high acceleration spike)
+            if isFrameOn && accel > 2.5 {
+                let now = Date()
+                if now.timeIntervalSince(lastShakeTime) > 0.6 {
+                    lastShakeTime = now
+                    colorIndex = (colorIndex + 1) % frameColors.count
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        frameColor = frameColors[colorIndex]
+                    }
+                }
+            }
         }
     }
     
