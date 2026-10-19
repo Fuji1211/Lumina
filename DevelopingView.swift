@@ -238,9 +238,49 @@ struct DevelopingView: View {
     }
     
     private func saveAndFinish() {
-        if let img = modifiedImage ?? image {
-            UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil)
+        guard let img = modifiedImage ?? image else {
+            onComplete()
+            return
         }
+        
+        let imageToSave: UIImage
+        if isFrameOn {
+            imageToSave = createFramedImage(from: img, frameColor: frameColor)
+        } else {
+            imageToSave = img
+        }
+        
+        UIImageWriteToSavedPhotosAlbum(imageToSave, nil, nil, nil)
         onComplete()
+    }
+    
+    /// Creates a UIImage with the photo (rounded) centered on the frame background.
+    private func createFramedImage(from image: UIImage, frameColor: Color) -> UIImage {
+        let padding: CGFloat = 48
+        let cornerRadius: CGFloat = 20
+        
+        let totalSize = CGSize(
+            width: image.size.width + padding * 2,
+            height: image.size.height + padding * 2
+        )
+        
+        let renderer = UIGraphicsImageRenderer(size: totalSize)
+        return renderer.image { context in
+            // Fill entire background with frame color
+            UIColor(frameColor).setFill()
+            context.fill(CGRect(origin: .zero, size: totalSize))
+            
+            // Draw the photo with rounded corners in the center
+            let imageRect = CGRect(
+                x: padding,
+                y: padding,
+                width: image.size.width,
+                height: image.size.height
+            )
+            
+            let path = UIBezierPath(roundedRect: imageRect, cornerRadius: cornerRadius)
+            path.addClip()
+            image.draw(in: imageRect)
+        }
     }
 }
