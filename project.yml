@@ -1,0 +1,28 @@
+name: Lumina
+options:
+  bundleIdPrefix: com.fuji1211
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+targets:
+  Lumina:
+    type: application
+    platform: iOS
+    sources:
+      - path: .
+        excludes:
+          - project.yml
+          - README.md
+          - .git
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.fuji1211.Lumina
+      INFOPLIST_KEY_NSCameraUsageDescription: "Lumina needs camera access to take photos."
+      INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription: "Lumina needs permission to save photos to your library."
+      GENERATE_INFOPLIST_FILE: YES
+      MARKETING_VERSION: "1.0"
+      CURRENT_PROJECT_VERSION: "1"
+    info:
+      path: Info.plist
+      properties:
+        UILaunchScreen: {}

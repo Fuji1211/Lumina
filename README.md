@@ -1,22 +1,20 @@
 # Lumina
 
-Premium retro film camera app for iOS.
+Premium retro film camera app for iPhone.
 
 ## Features
-- Live camera preview with film effects
-- Film stocks: Portra 400, Disposable Flash, Foggy SLR, Expired
-- Vignette, grain, highlight crush, flash overexposure, lens haze
-- Developing ritual animation after shutter
+- Live camera preview
+- Film stocks: Portra 400, Disposable Flash, Foggy SLR, Expired Film
+- Effects: Vignette, grain, lens haze, highlight crush, flash overexposure
+- Developing ritual with optional darkroom adjustment mode (temperature / agitation / time)
 
-## Setup in Xcode
+## For Grok Build
+See `GROK_BUILD.md` for the exact prompt to paste into Grok Build.
 
-1. Create a new Xcode project: iOS App, SwiftUI, Swift.
-2. Name it Lumina.
-3. Delete the default ContentView.swift and LuminaApp.swift if they exist.
-4. Add all the Swift files from this repo into the project (drag & drop, check "Copy items if needed").
-5. In Info.plist (or target Info), add:
-   - Privacy - Camera Usage Description: "Lumina needs camera access to capture film-style photos."
-6. Set Deployment Target to iOS 16+.
-7. Build and run on your device (with developer account).
-
-Enjoy the imperfect beauty of film.
+## Manual Setup
+1. Clone this repo
+2. Install XcodeGen (`brew install xcodegen`)
+3. Run `xcodegen`
+4. Open `Lumina.xcodeproj`
+5. Set your Development Team
+6. Build & run on device
